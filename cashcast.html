@@ -530,7 +530,8 @@ function bankNum(v){ // bank can be null
    6. ACTIONS  (mutate state -> persist -> emit)
    ============================================================ */
 const actions = {
-  updateField(date, field, rawValue){
+  // low-level write: mutate the record + persist, no rendering
+  writeField(date, field, rawValue){
     const rec = Object.assign(blankRecord(date), store.state.records[date]);
     if(field==="bank") rec.bank = bankNum(rawValue);
     else if(field==="note") rec.note = String(rawValue).slice(0,140);
@@ -542,7 +543,14 @@ const actions = {
       rec.date = date;
       store.state.records[date] = rec;
     }
-    store.persist(); store.emit();
+    store.persist();
+  },
+  // commit a field edit WITHOUT tearing down the inputs / top controls, so that
+  // tapping another element in the same gesture keeps the keyboard up and lets
+  // that element's own action fire on the same tap.
+  commitField(date, field, rawValue){
+    this.writeField(date, field, rawValue);
+    if(store.state.ui.view==="dashboard") refreshDerived();
   },
   selectDate(date){
     store.state.ui.selectedDate = date;
@@ -751,7 +759,7 @@ function arcPath(cx,cy,r,startDeg,endDeg){
 }
 
 // Projected balance line/area chart
-function balanceChart(series){
+function balanceChart(series, animate=true){
   const W=320,H=170,padL=6,padR=6,padT=14,padB=24;
   const today = todayISO();
   if(series.length<2){
@@ -826,7 +834,7 @@ function balanceChart(series){
 
   const wrap=document.createElement("div"); wrap.className="chart-wrap"; wrap.appendChild(svg);
   // animate draw — line-draw the solid actual path, fade in the dashed forecast + dots
-  if(HAS_ANIME){
+  if(animate && HAS_ANIME){
     const actual = svg.querySelector("path[stroke='#3ddc97'][fill='none']");
     const len = pathLen(actual);
     if(actual && len){ actual.style.strokeDasharray=len; actual.style.strokeDashoffset=len;
@@ -840,7 +848,7 @@ function balanceChart(series){
 function txt(s){ return document.createTextNode(s); }
 
 // semicircle gauge (0..2 ratio, 1 = on pace)
-function paceGauge(ratio){
+function paceGauge(ratio, animate=true){
   const W=150,H=96,cx=75,cy=84,r=62;
   const clamped = Math.max(0, Math.min(2, ratio));
   const pct = clamped/2; // 0..1 across 180deg
@@ -855,7 +863,7 @@ function paceGauge(ratio){
   const tick = polar(cx,cy,r+8,0);
   const tickIn = polar(cx,cy,r-8,0);
   svg.appendChild(el("line",{x1:tickIn.x,y1:tickIn.y,x2:tick.x,y2:tick.y,stroke:"#6c7c8c","stroke-width":1.5}));
-  if(HAS_ANIME){
+  if(animate && HAS_ANIME){
     const len=pathLen(fg);
     if(len){ fg.style.strokeDasharray=len; fg.style.strokeDashoffset=len;
       anime({targets:fg,strokeDashoffset:[len,0],duration:900,easing:"easeOutCubic"}); }
@@ -863,7 +871,7 @@ function paceGauge(ratio){
   return svg;
 }
 // radial ring gauge (value vs reference for EOM forecast)
-function ringGauge(pct, color){
+function ringGauge(pct, color, animate=true){
   const W=150,H=150,cx=75,cy=75,r=60;
   const c=2*Math.PI*r;
   const p=Math.max(0,Math.min(1,pct));
@@ -871,7 +879,7 @@ function ringGauge(pct, color){
   svg.appendChild(el("circle",{cx,cy,r,fill:"none",stroke:"#212d3b","stroke-width":11}));
   const fg=el("circle",{cx,cy,r,fill:"none",stroke:color,"stroke-width":11,"stroke-linecap":"round",transform:`rotate(-90 ${cx} ${cy})`,"stroke-dasharray":c,"stroke-dashoffset":c*(1-p)});
   svg.appendChild(fg);
-  if(HAS_ANIME){ fg.style.strokeDashoffset=c; anime({targets:fg,strokeDashoffset:[c,c*(1-p)],duration:1000,easing:"easeOutCubic"}); }
+  if(animate && HAS_ANIME){ fg.style.strokeDashoffset=c; anime({targets:fg,strokeDashoffset:[c,c*(1-p)],duration:1000,easing:"easeOutCubic"}); }
   return svg;
 }
 
@@ -948,7 +956,7 @@ function renderDashboard(main){
   const noteWrap = h("div",{class:"note-field"},[
     h("div",{class:"lbl"},"Note"),
     h("input",{type:"text",value:rec.note||"",placeholder:"What's this expense / day about?",maxlength:140,
-      onChange:e=>actions.updateField(sel,"note",e.target.value)})
+      onChange:e=>actions.commitField(sel,"note",e.target.value)})
   ]);
   ribbon.appendChild(noteWrap);
   main.appendChild(ribbon);
@@ -974,58 +982,75 @@ function renderDashboard(main){
   main.appendChild(detail);
   renderDetail();
 
-  /* ----- Visualizations ----- */
-  main.appendChild(h("div",{class:"section-label"},"Forecast"));
+  // Visualizations live in their own container so a field commit can refresh
+  // them in place without rebuilding the ribbons / inputs / top controls above.
+  const viz = h("div",{id:"vizSection"});
+  main.appendChild(viz);
+  renderViz(viz, true);
+
+  // animate forecast numbers + reveal ribbon
+  requestAnimationFrame(()=>{
+    setMetric("wtd", wtd, fmtMoney);
+    setMetric("mtd", mtd, fmtMoney);
+    setMetric("eom", eom.value, n=>fmtMoney(n,{cents:false}));
+    setMetric("mexp", mexp, fmtMoney);
+    pop(ribbon);
+  });
+}
+
+// Build/refresh the scrollable visualizations into a container.
+// animate=true plays the reveal stagger (initial render); false = quiet refresh.
+function renderViz(container, animate){
+  const sel = store.state.ui.selectedDate;
+  const eom = forecastEndOfMonth(sel);
+  container.innerHTML="";
+  container.appendChild(h("div",{class:"section-label"},"Forecast"));
 
   // 1. Projected balance
-  const chartEnd = endOfMonth(sel);
-  const proj = projectSeries(startOfMonth(sel), chartEnd);
+  const proj = projectSeries(startOfMonth(sel), endOfMonth(sel));
   const c1 = h("div",{class:"card"},[
     h("div",{class:"card-head"},[ h("div",{class:"card-title"},"Projected balance"), h("div",{class:"card-hint"}, MONTHS[parseISO(sel).getMonth()]) ]),
     h("div",{class:"card-sub"}, proj.anchor ? `From ${fmtMoney(proj.anchor.bank)} on ${fmtDayLong(proj.anchor.date)} · ${fmtMoney(proj.daily,{cents:true})}/day avg income` : "Enter a bank balance to begin")
   ]);
-  c1.appendChild(balanceChart(proj.series));
+  c1.appendChild(balanceChart(proj.series, animate));
   c1.appendChild(h("div",{class:"legend"},[
     h("div",{class:"li"},[h("span",{class:"swatch",style:"background:#3ddc97"}),"Actual"]),
     h("div",{class:"li"},[h("span",{class:"swatch dash"}),"Forecast"]),
     h("div",{class:"li"},[h("span",{class:"swatch",style:"background:#ff7a72"}),"Expense"])
   ]));
-  main.appendChild(c1);
+  container.appendChild(c1);
 
   // 2 gauges
   const pace = incomePace(sel);
   const gWrap = h("div",{class:"gauge-grid"});
-  // pace gauge
   const gc1 = h("div",{class:"card gauge-card"},[
     h("div",{class:"card-title",style:"align-self:flex-start;margin-bottom:8px"},"Income pace")
   ]);
-  gc1.appendChild(paceGauge(pace.ratio));
+  gc1.appendChild(paceGauge(pace.ratio, animate));
   gc1.appendChild(h("div",{class:"gauge-num",style:`color:${pace.ratio>=.95?'#3ddc97':pace.ratio>=.7?'#f5c451':'#ff7a72'}`}, Math.round(pace.ratio*100)+"%"));
   gc1.appendChild(h("div",{class:"gauge-cap"}, `${fmtMoney(pace.actual)} vs ${fmtMoney(pace.expected)} expected`));
   const paceTag = pace.ratio>=.95?{t:"On / ahead of pace",c:"#3ddc97",b:"rgba(61,220,151,.14)"}:pace.ratio>=.7?{t:"Slightly behind",c:"#f5c451",b:"rgba(245,196,81,.14)"}:{t:"Behind pace",c:"#ff7a72",b:"rgba(255,122,114,.14)"};
   gc1.appendChild(h("div",{class:"gauge-tag",style:`color:${paceTag.c};background:${paceTag.b}`}, paceTag.t));
   gWrap.appendChild(gc1);
 
-  // runway / EOM gauge
   const curBank = (latestBankEntry(todayISO())||{bank:0}).bank;
   const ringPct = curBank>0 ? Math.max(0,Math.min(1, eom.value/curBank)) : (eom.value>0?1:0);
   const ringCol = eom.value<0?"#ff7a72":eom.value>=curBank?"#3ddc97":"#f5c451";
   const gc2 = h("div",{class:"card gauge-card"},[
     h("div",{class:"card-title",style:"align-self:flex-start;margin-bottom:8px"},"End of month")
   ]);
-  gc2.appendChild(ringGauge(ringPct, ringCol));
+  gc2.appendChild(ringGauge(ringPct, ringCol, animate));
   gc2.appendChild(h("div",{class:"gauge-num",style:`color:${ringCol}`}, fmtMoney(eom.value,{cents:false})));
   const delta = eom.value - curBank;
   gc2.appendChild(h("div",{class:"gauge-cap"}, `${delta>=0?"▲":"▼"} ${fmtMoney(Math.abs(delta),{cents:false})} vs now`));
-  // runway: days until balance crosses zero
   const runway = computeRunway();
   gc2.appendChild(h("div",{class:"gauge-tag",style: runway===null?"color:#3ddc97;background:rgba(61,220,151,.14)":"color:#ff7a72;background:rgba(255,122,114,.14)"},
      runway===null?"Stays positive 90d+":`Runway ~${runway} day${runway===1?"":"s"}`));
   gWrap.appendChild(gc2);
-  main.appendChild(gWrap);
+  container.appendChild(gWrap);
 
   // 3. Upcoming expenses
-  main.appendChild(h("div",{class:"section-label"},"What's coming"));
+  container.appendChild(h("div",{class:"section-label"},"What's coming"));
   const ups = upcomingExpenses(todayISO(), 90);
   const c3 = h("div",{class:"card"});
   c3.appendChild(h("div",{class:"card-head"},[ h("div",{class:"card-title"},"Upcoming expenses"), h("div",{class:"card-hint"}, ups.length?fmtMoney(ups.reduce((s,e)=>s+e.amount,0),{cents:false})+" total":"next 90 days") ]));
@@ -1047,28 +1072,38 @@ function renderDashboard(main){
       list.appendChild(row);
     });
     c3.appendChild(list);
-    main.appendChild(c3);
-    requestAnimationFrame(()=>{ $$(".exp-bar i",c3).forEach(b=>{ if(HAS_ANIME) anime({targets:b,width:[0,b.dataset.w+"%"],duration:700,easing:"easeOutCubic"}); else b.style.width=b.dataset.w+"%"; }); });
+    container.appendChild(c3);
+    requestAnimationFrame(()=>{ $$(".exp-bar i",c3).forEach(b=>{ if(animate && HAS_ANIME) anime({targets:b,width:[0,b.dataset.w+"%"],duration:700,easing:"easeOutCubic"}); else b.style.width=b.dataset.w+"%"; }); });
   } else {
     c3.appendChild(h("div",{class:"empty-card"},[ h("div",{class:"ic"},"🗓️"), h("div",{class:"t"},"No upcoming expenses"), h("div",{class:"d"},"Future expenses you log will appear here.") ]));
-    main.appendChild(c3);
+    container.appendChild(c3);
   }
 
   // 4. Expense timeline
   const c4 = h("div",{class:"card"});
   c4.appendChild(h("div",{class:"card-head"},[ h("div",{class:"card-title"},"Cash timeline"), h("div",{class:"card-hint"},"90 days") ]));
-  c4.appendChild(buildTimeline(ups));
-  main.appendChild(c4);
+  c4.appendChild(buildTimeline(ups, animate));
+  container.appendChild(c4);
 
-  // animate forecast numbers + reveal cards
-  requestAnimationFrame(()=>{
-    setMetric("wtd", wtd, fmtMoney);
-    setMetric("mtd", mtd, fmtMoney);
-    setMetric("eom", eom.value, n=>fmtMoney(n,{cents:false}));
-    setMetric("mexp", mexp, fmtMoney);
-    pop(ribbon);
-    staggerIn($$(".card",main));
-  });
+  if(animate) requestAnimationFrame(()=>staggerIn($$(".card",container)));
+}
+
+// Lightweight in-place refresh after a field commit: updates derived metrics &
+// visualizations without tearing down the ribbon inputs or top controls, so the
+// element tapped in the same gesture keeps working and the keyboard stays up.
+function refreshDerived(){
+  if(store.state.ui.view!=="dashboard") return;
+  const sel = store.state.ui.selectedDate;
+  const eomVal = forecastEndOfMonth(sel).value;
+  setMetric("wtd", weekToDate(sel), fmtMoney);
+  setMetric("mtd", monthToDate(sel), fmtMoney);
+  setMetric("eom", eomVal, n=>fmtMoney(n,{cents:false}));
+  setMetric("mexp", monthExpenses(sel), fmtMoney);
+  const em=$("#metric-eom"); if(em){ em.classList.toggle("neg", eomVal<0); em.classList.toggle("gold", eomVal>=0); }
+  const viz=$("#vizSection"); if(viz) renderViz(viz, false);
+  // refresh the open detail panel only when the user isn't editing inside it
+  const panel=$("#detailPanel");
+  if(panel && store.state.ui.openPanel && !panel.contains(document.activeElement)) renderDetail();
 }
 
 function computeRunway(){
@@ -1084,7 +1119,7 @@ function field(cls,label,value,sym,placeholder,dotColor,sel){
     h("div",{style:"display:flex;align-items:baseline;gap:1px"},[
       h("span",{class:"pfx"}, sym),
       h("input",{type:"text",inputmode:"decimal",value:value===""?"":String(value),placeholder,
-        onChange:e=>actions.updateField(sel, cls, e.target.value),
+        onChange:e=>actions.commitField(sel, cls, e.target.value),
         onFocus:e=>e.target.select()})
     ])
   ]);
@@ -1141,7 +1176,7 @@ function incomeEditRow(date, amount){
     h("div",{class:"er-date"}, `${DOW[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}`),
     h("div",{class:"er-note"}, store.state.records[date]?.note||""),
     h("input",{type:"text",inputmode:"decimal",value:amount||"",placeholder:"0",
-      onChange:e=>{ actions.updateField(date,"income",e.target.value); }})
+      onChange:e=>{ actions.commitField(date,"income",e.target.value); }})
   ]);
 }
 function detailWTD(sel){
@@ -1194,7 +1229,7 @@ function detailExpenses(sel){
         h("div",{class:"er-date"}, `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}`),
         h("div",{class:"er-note"}, r.note||"Expense"),
         h("input",{type:"text",inputmode:"decimal",value:r.expense||"",
-          onChange:e=>actions.updateField(cur,"expense",e.target.value)})
+          onChange:e=>actions.commitField(cur,"expense",e.target.value)})
       ]));
     }
     cur=addDays(cur,1);
@@ -1207,7 +1242,7 @@ function detailExpenses(sel){
 function calc(k,v){ return h("div",{class:"calc-row"},[ h("span",{class:"k"},k), h("span",{class:"v"}, v) ]); }
 
 // timeline of upcoming expenses across 90 days
-function buildTimeline(ups){
+function buildTimeline(ups, animate){
   const wrap=h("div",{class:"timeline"});
   const track=h("div",{class:"tl-track"});
   track.appendChild(h("div",{class:"tl-fill",style:"width:0%"}));
@@ -1226,7 +1261,7 @@ function buildTimeline(ups){
   wrap.appendChild(h("div",{class:"tl-legend"}, ups.length
     ? `${ups.length} expense${ups.length>1?"s":""} totalling ${fmtMoney(total)} over the next 90 days. Larger dots are bigger hits to available cash.`
     : "No scheduled expenses in the next 90 days — your cash runway is clear."));
-  requestAnimationFrame(()=>{ const f=$(".tl-fill",wrap); if(HAS_ANIME) anime({targets:f,width:["0%","100%"],duration:800,easing:"easeOutCubic"}); else f.style.width="100%"; });
+  requestAnimationFrame(()=>{ const f=$(".tl-fill",wrap); if(animate && HAS_ANIME) anime({targets:f,width:["0%","100%"],duration:800,easing:"easeOutCubic"}); else f.style.width="100%"; });
   return wrap;
 }
 
@@ -1265,7 +1300,7 @@ function renderSpreadsheet(main){
       h("button",{class:"ss-del",onClick:()=>{ if(confirm("Delete "+date+"?")) actions.deleteRecord(date); },html:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>'})
     ]));
     row.appendChild(h("div",{class:"ss-note"},[
-      h("input",{type:"text",value:r.note||"",placeholder:"note…",maxlength:140,onChange:e=>actions.updateField(date,"note",e.target.value)})
+      h("input",{type:"text",value:r.note||"",placeholder:"note…",maxlength:140,onChange:e=>actions.commitField(date,"note",e.target.value)})
     ]));
     table.appendChild(row);
   });
@@ -1276,7 +1311,7 @@ function ssCell(field,date,val){
   const map={bank:"bank",income:"inc",expense:"exp"};
   return h("div",{class:"ss-cell "+map[field]},[
     h("input",{type:"text",inputmode:"decimal",value:val===""?"":String(val),placeholder:field==="bank"?"—":"0",
-      onChange:e=>actions.updateField(date,field,e.target.value),onFocus:e=>e.target.select()})
+      onChange:e=>actions.commitField(date,field,e.target.value),onFocus:e=>e.target.select()})
   ]);
 }
 function addRowPrompt(){
