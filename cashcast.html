@@ -115,13 +115,13 @@ input,textarea,select{font-family:inherit;font-size:16px;color:inherit}
 .date-btn .d-sub{font-size:11px;color:var(--text-dim);font-weight:600}
 .date-btn .chev{width:14px;height:14px;color:var(--text-faint)}
 .today-badge{
-  display:none;align-items:center;gap:6px;
-  font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  display:none;align-items:center;justify-content:center;gap:5px;
+  font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
   color:#06131a;background:linear-gradient(120deg,var(--pos),#7ef0bf);
-  padding:5px 11px;border-radius:20px;box-shadow:0 4px 12px rgba(61,220,151,.4);
+  height:34px;padding:0 12px;border-radius:10px;box-shadow:0 4px 12px rgba(61,220,151,.4);
 }
 .is-today .today-badge{display:inline-flex}
-.nav-arrows{display:flex;gap:6px}
+.nav-arrows{display:flex;gap:6px;align-items:center}
 .nav-arrows button{
   width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
   background:var(--surface-2);border:1px solid var(--line);color:var(--text-dim);
@@ -221,8 +221,12 @@ input,textarea,select{font-family:inherit;font-size:16px;color:inherit}
 .gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:380px){.gauge-grid{grid-template-columns:1fr}}
 .gauge-card{display:flex;flex-direction:column;align-items:center;text-align:center}
-.gauge-num{font-size:26px;font-weight:800;letter-spacing:-.6px;margin-top:-22px}
-.gauge-cap{font-size:11.5px;color:var(--text-dim);font-weight:600;margin-top:4px}
+.gauge-vis{position:relative;width:150px;max-width:100%;margin:2px auto 0}
+.gauge-vis svg{display:block;width:100%;height:auto}
+.gauge-num{position:absolute;left:0;right:0;text-align:center;font-size:23px;font-weight:800;letter-spacing:-.6px;white-space:nowrap;line-height:1}
+.gauge-vis.ring .gauge-num{top:50%;transform:translateY(-50%)}
+.gauge-vis.semi .gauge-num{top:62%;transform:translateY(-50%)}
+.gauge-cap{font-size:11.5px;color:var(--text-dim);font-weight:600;margin-top:8px}
 .gauge-tag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-top:8px;letter-spacing:.3px}
 
 /* upcoming expenses list */
@@ -936,13 +940,13 @@ function renderDashboard(main){
       ]),
       h("span",{class:"chev",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>'})
     ]),
-    isToday
-      ? h("span",{class:"today-badge"},[ h("span",{html:'<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>'}),"Today"])
-      : h("div",{class:"nav-arrows"},[
-          h("button",{onClick:()=>actions.selectDate(addDays(sel,-1)),"aria-label":"Previous day",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>'}),
-          h("button",{onClick:()=>actions.selectDate(todayISO()),"aria-label":"Today",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>'}),
-          h("button",{onClick:()=>actions.selectDate(addDays(sel,1)),"aria-label":"Next day",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>'})
-        ])
+    h("div",{class:"nav-arrows"},[
+      h("button",{onClick:()=>actions.selectDate(addDays(sel,-1)),"aria-label":"Previous day",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>'}),
+      isToday
+        ? h("span",{class:"today-badge"},[ h("span",{html:'<svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>'}),"Today"])
+        : h("button",{onClick:()=>actions.selectDate(todayISO()),"aria-label":"Jump to today",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>'}),
+      h("button",{onClick:()=>actions.selectDate(addDays(sel,1)),"aria-label":"Next day",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>'})
+    ])
   ]);
   ribbon.appendChild(head);
 
@@ -1026,8 +1030,10 @@ function renderViz(container, animate){
   const gc1 = h("div",{class:"card gauge-card"},[
     h("div",{class:"card-title",style:"align-self:flex-start;margin-bottom:8px"},"Income pace")
   ]);
-  gc1.appendChild(paceGauge(pace.ratio, animate));
-  gc1.appendChild(h("div",{class:"gauge-num",style:`color:${pace.ratio>=.95?'#3ddc97':pace.ratio>=.7?'#f5c451':'#ff7a72'}`}, Math.round(pace.ratio*100)+"%"));
+  gc1.appendChild(h("div",{class:"gauge-vis semi"},[
+    paceGauge(pace.ratio, animate),
+    h("div",{class:"gauge-num",style:`color:${pace.ratio>=.95?'#3ddc97':pace.ratio>=.7?'#f5c451':'#ff7a72'}`}, Math.round(pace.ratio*100)+"%")
+  ]));
   gc1.appendChild(h("div",{class:"gauge-cap"}, `${fmtMoney(pace.actual)} vs ${fmtMoney(pace.expected)} expected`));
   const paceTag = pace.ratio>=.95?{t:"On / ahead of pace",c:"#3ddc97",b:"rgba(61,220,151,.14)"}:pace.ratio>=.7?{t:"Slightly behind",c:"#f5c451",b:"rgba(245,196,81,.14)"}:{t:"Behind pace",c:"#ff7a72",b:"rgba(255,122,114,.14)"};
   gc1.appendChild(h("div",{class:"gauge-tag",style:`color:${paceTag.c};background:${paceTag.b}`}, paceTag.t));
@@ -1039,8 +1045,10 @@ function renderViz(container, animate){
   const gc2 = h("div",{class:"card gauge-card"},[
     h("div",{class:"card-title",style:"align-self:flex-start;margin-bottom:8px"},"End of month")
   ]);
-  gc2.appendChild(ringGauge(ringPct, ringCol, animate));
-  gc2.appendChild(h("div",{class:"gauge-num",style:`color:${ringCol}`}, fmtMoney(eom.value,{cents:false})));
+  gc2.appendChild(h("div",{class:"gauge-vis ring"},[
+    ringGauge(ringPct, ringCol, animate),
+    h("div",{class:"gauge-num",style:`color:${ringCol}`}, fmtMoney(eom.value,{cents:false}))
+  ]));
   const delta = eom.value - curBank;
   gc2.appendChild(h("div",{class:"gauge-cap"}, `${delta>=0?"▲":"▼"} ${fmtMoney(Math.abs(delta),{cents:false})} vs now`));
   const runway = computeRunway();
