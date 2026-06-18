@@ -358,6 +358,76 @@ input,textarea,select{font-family:inherit;font-size:16px;color:inherit}
 .ss-note input::placeholder{color:var(--text-faint)}
 .ss-empty{text-align:center;padding:30px;color:var(--text-faint)}
 
+/* ============== Recurring rules ============== */
+.rec-add{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:13px;border-radius:13px;background:linear-gradient(120deg,var(--pos),#2f8efc);
+  color:#06131a;font-weight:800;font-size:14px;margin-bottom:14px;
+}
+.rec-add:active{transform:scale(.98)}
+.rec-add svg{width:18px;height:18px}
+.rec-list{display:flex;flex-direction:column;gap:9px}
+.rec-card{
+  width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:12px;
+  transition:transform .1s,background .15s;
+}
+.rec-card:active{transform:scale(.985);background:var(--surface-2)}
+.rec-card.off{opacity:.5}
+.rec-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.rec-ic.income{background:rgba(61,220,151,.14);color:var(--pos)}
+.rec-ic.expense{background:rgba(255,122,114,.14);color:var(--neg)}
+.rec-info{flex:1;min-width:0}
+.rec-name{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-meta{font-size:12px;color:var(--text-dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-amt{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;flex-shrink:0;text-align:right;white-space:nowrap}
+.rec-amt.income{color:var(--pos)}
+.rec-amt.expense{color:var(--neg)}
+.rec-amt small{display:block;font-size:10px;color:var(--text-faint);font-weight:600;margin-top:1px}
+.rec-empty{text-align:center;padding:26px 16px;color:var(--text-dim)}
+.rec-empty .ic{font-size:30px;margin-bottom:8px}
+.rec-empty .t{font-weight:700;color:var(--text);margin-bottom:4px}
+.rec-empty .d{font-size:13px}
+.rec-intro{font-size:12.5px;color:var(--text-dim);line-height:1.5;margin:-4px 0 14px}
+/* rule form */
+.rec-form{display:flex;flex-direction:column;gap:14px}
+.rf-row{display:flex;flex-direction:column;gap:6px}
+.rf-row label{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--text-faint)}
+.rf-row input,.rf-row select{
+  background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  padding:12px;font-weight:600;color:var(--text);width:100%;outline:none;
+}
+.rf-row input:focus,.rf-row select:focus{border-color:var(--accent)}
+.rf-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rf-hint{font-size:12px;color:var(--text-faint);font-weight:600}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg button{padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;color:var(--text-dim);transition:background .15s,color .15s}
+.seg button.on.income{background:rgba(61,220,151,.16);color:var(--pos)}
+.seg button.on.expense{background:rgba(255,122,114,.16);color:var(--neg)}
+.rf-active{display:flex;align-items:center;justify-content:space-between;padding:13px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.rf-active .t{font-weight:700;font-size:14px}
+.rf-active .d{font-size:12px;color:var(--text-dim);margin-top:1px}
+.rf-actions{display:flex;gap:10px;margin-top:2px}
+.rf-actions button{flex:1;padding:13px;border-radius:13px;font-weight:800;font-size:14px}
+.rf-save{background:linear-gradient(120deg,var(--pos),#2f8efc);color:#06131a}
+.rf-cancel{background:var(--surface);border:1px solid var(--line);color:var(--text-dim)}
+.rf-del{width:100%;margin-top:2px;padding:13px;border-radius:13px;font-weight:800;font-size:14px;background:rgba(255,122,114,.1);border:1px solid var(--neg-dim);color:var(--neg)}
+
+/* recurring summary card (dashboard) */
+.rsum{display:flex;flex-direction:column;gap:10px}
+.rsum-net{display:flex;align-items:baseline;gap:8px}
+.rsum-net .v{font-size:23px;font-weight:800;letter-spacing:-.5px}
+.rsum-net .v.pos{color:var(--pos)} .rsum-net .v.neg{color:var(--neg)}
+.rsum-net .u{font-size:12px;color:var(--text-faint);font-weight:600}
+.rsum-split{display:flex;gap:18px;flex-wrap:wrap}
+.rsum-split .k{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-faint)}
+.rsum-split .s{font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.rsum-split .s.pos{color:var(--pos)} .rsum-split .s.neg{color:var(--neg)}
+.rsum-manage{margin-top:2px;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);font-weight:700;font-size:13px;color:var(--text)}
+.rsum-manage:active{transform:scale(.97)}
+.rsum-manage svg{width:14px;height:14px}
+.exp-tag{font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--blue);background:rgba(91,157,255,.14);padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
+
 /* toast */
 .toast{
   position:fixed;left:50%;bottom:calc(24px + var(--safe-b));
@@ -421,6 +491,17 @@ input,textarea,select{font-family:inherit;font-size:16px;color:inherit}
   </div>
 </div>
 
+<!-- recurring rules overlay -->
+<div class="overlay" id="recOverlay">
+  <div class="sheet" id="recSheet">
+    <div class="grabber"></div>
+    <div class="sheet-title" id="recTitle">Recurring
+      <button class="x" id="recClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="recBody"></div>
+  </div>
+</div>
+
 <input type="file" id="importFile" accept="application/json,.json" class="hidden">
 <div class="toast" id="toast"></div>
 
@@ -431,9 +512,12 @@ input,textarea,select{font-family:inherit;font-size:16px;color:inherit}
 /* ============================================================
    1. CONSTANTS
    ============================================================ */
-const APP_VERSION = 1;
+const APP_VERSION = 2;
 const STORAGE_KEY = "cashcast.v1";
 const ROLL_DAYS = 28;
+const RECUR_HORIZON = 730;            // max days a rule is expanded into the forecast
+const CADENCE_UNITS = ["day","week","month","year"];
+const ORDINALS = ["th","st","nd","rd"];
 const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -479,6 +563,7 @@ const Storage = {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         version: APP_VERSION,
         records: state.records,
+        recurring: state.recurring,
         settings: state.settings
       }));
     }catch(e){ console.warn("save failed",e); toast("Could not save — storage full?", true); }
@@ -492,8 +577,9 @@ function defaultState(){
   return {
     version: APP_VERSION,
     records: {},               // { "YYYY-MM-DD": {date,bank,income,expense,note} }
-    settings: { currency:"USD" },
-    ui: { selectedDate: todayISO(), view:"dashboard", openPanel:null, calMonth: startOfMonth(todayISO()) }
+    recurring: [],             // [ {id,type,amount,cadence:{unit,interval},startDate,endDate,category,note,active} ]
+    settings: { currency:"USD", useRollingIncome:true },
+    ui: { selectedDate: todayISO(), view:"dashboard", openPanel:null, calMonth: startOfMonth(todayISO()), recEdit:null }
   };
 }
 const store = {
@@ -508,7 +594,8 @@ function hydrate(){
   const saved = Storage.load();
   if(saved){
     store.state.records = saved.records && typeof saved.records==="object" ? saved.records : {};
-    store.state.settings = Object.assign({currency:"USD"}, saved.settings||{});
+    store.state.recurring = Array.isArray(saved.recurring) ? saved.recurring.map(sanitizeRule).filter(Boolean) : [];
+    store.state.settings = Object.assign({currency:"USD", useRollingIncome:true}, saved.settings||{});
   }
 }
 
@@ -528,6 +615,34 @@ function bankNum(v){ // bank can be null
   if(v===null||v===undefined||String(v).trim()==="") return null;
   const n = parseFloat(String(v).replace(/[^0-9.\-]/g,""));
   return Number.isFinite(n) ? n : null;
+}
+
+// ---- recurring rules ----
+function genId(){ return "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function blankRule(){
+  return { id:genId(), type:"expense", amount:0, cadence:{unit:"month",interval:1},
+    startDate:todayISO(), endDate:null, category:"", note:"", active:true };
+}
+// validate / coerce an arbitrary object into a clean rule, or null if unusable
+function sanitizeRule(r){
+  if(!r || typeof r!=="object") return null;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(r.startDate||"")) return null;
+  const unit = CADENCE_UNITS.includes(r.cadence&&r.cadence.unit) ? r.cadence.unit : "month";
+  let interval = Math.round(num((r.cadence&&r.cadence.interval)||1));
+  if(!(interval>=1)) interval = 1;
+  const amount = Math.max(0, num(r.amount));
+  const end = /^\d{4}-\d{2}-\d{2}$/.test(r.endDate||"") ? r.endDate : null;
+  return {
+    id: typeof r.id==="string" && r.id ? r.id : genId(),
+    type: r.type==="income" ? "income" : "expense",
+    amount,
+    cadence: { unit, interval },
+    startDate: r.startDate,
+    endDate: end,
+    category: typeof r.category==="string" ? r.category.slice(0,40) : "",
+    note: typeof r.note==="string" ? r.note.slice(0,140) : "",
+    active: r.active!==false
+  };
 }
 
 /* ============================================================
@@ -568,6 +683,21 @@ const actions = {
   },
   setView(view){ store.state.ui.view = view; store.state.ui.openPanel=null; store.emit(); },
   setCurrency(code){ store.state.settings.currency = code; store.persist(); store.emit(); },
+  setUseRollingIncome(on){ store.state.settings.useRollingIncome = !!on; store.persist(); store.emit(); },
+  // recurring rules
+  saveRule(rule){
+    const clean = sanitizeRule(rule);
+    if(!clean) throw new Error("Invalid rule");
+    const idx = store.state.recurring.findIndex(r=>r.id===clean.id);
+    if(idx>=0) store.state.recurring[idx] = clean;
+    else store.state.recurring.push(clean);
+    store.persist(); store.emit();
+  },
+  deleteRule(id){ store.state.recurring = store.state.recurring.filter(r=>r.id!==id); store.persist(); store.emit(); },
+  toggleRule(id){
+    const r = store.state.recurring.find(x=>x.id===id);
+    if(r){ r.active = !r.active; store.persist(); store.emit(); }
+  },
   deleteRecord(date){ delete store.state.records[date]; store.persist(); store.emit(); },
   clearAll(){ store.state.records = {}; store.persist(); store.emit(); },
   importData(obj){
@@ -589,8 +719,12 @@ const actions = {
       count++;
     }
     store.state.records = clean;
+    if(Array.isArray(obj.recurring))
+      store.state.recurring = obj.recurring.map(sanitizeRule).filter(Boolean);
     if(obj.settings && obj.settings.currency && CURRENCIES[obj.settings.currency])
       store.state.settings.currency = obj.settings.currency;
+    if(obj.settings && typeof obj.settings.useRollingIncome==="boolean")
+      store.state.settings.useRollingIncome = obj.settings.useRollingIncome;
     store.persist(); store.emit();
     return count;
   }
@@ -645,10 +779,76 @@ function weekToDate(date){ return sumIncome(startOfWeek(date), date); }
 function monthToDate(date){ return sumIncome(startOfMonth(date), date); }
 function monthExpenses(date){ return sumExpense(startOfMonth(date), endOfMonth(date)); }
 
+/* ---- recurring rule expansion (never written to records) ---- */
+function ordinal(n){ const v=n%100; return n+(ORDINALS[(v-20)%10]||ORDINALS[v]||ORDINALS[0]); }
+// clamp a desired day-of-month to the days actually available that month
+function effectiveDom(year, month, desiredDay){ return Math.min(desiredDay, daysInMonth(year,month)); }
+
+// does a single rule fire on the given ISO date?  Anchored to the rule's start date.
+function ruleOccursOn(rule, date){
+  if(!rule.active) return false;
+  if(date < rule.startDate) return false;
+  if(rule.endDate && date > rule.endDate) return false;
+  const n = Math.max(1, rule.cadence.interval||1);
+  const start = parseISO(rule.startDate);
+  const d = parseISO(date);
+  switch(rule.cadence.unit){
+    case "day":  { const diff=daysBetween(rule.startDate,date); return diff>=0 && diff%n===0; }
+    case "week": { const diff=daysBetween(rule.startDate,date); return diff>=0 && diff%(7*n)===0; }
+    case "month":{
+      if(d.getDate()!==effectiveDom(d.getFullYear(),d.getMonth(),start.getDate())) return false;
+      const months=(d.getFullYear()-start.getFullYear())*12+(d.getMonth()-start.getMonth());
+      return months>=0 && months%n===0;
+    }
+    case "year": {
+      if(d.getMonth()!==start.getMonth()) return false;
+      if(d.getDate()!==effectiveDom(d.getFullYear(),d.getMonth(),start.getDate())) return false;
+      const years=d.getFullYear()-start.getFullYear();
+      return years>=0 && years%n===0;
+    }
+  }
+  return false;
+}
+// aggregate every active rule that fires on a date -> {income,expense,items:[{rule,amount,type}]}
+function recurringOnDate(date){
+  const out={income:0, expense:0, items:[]};
+  for(const rule of store.state.recurring){
+    if(ruleOccursOn(rule, date)){
+      out[rule.type] += rule.amount;
+      out.items.push({rule, amount:rule.amount, type:rule.type});
+    }
+  }
+  return out;
+}
+// human label for a rule's cadence, e.g. "Every other Fri", "Monthly on the 1st"
+function cadenceLabel(rule){
+  const n = Math.max(1, rule.cadence.interval||1);
+  const start = parseISO(rule.startDate);
+  switch(rule.cadence.unit){
+    case "day":   return n===1 ? "Daily" : `Every ${n} days`;
+    case "week":  { const wd=DOW[start.getDay()];
+      return n===1 ? `Weekly on ${wd}` : n===2 ? `Every other ${wd}` : `Every ${n} weeks on ${wd}`; }
+    case "month": { const dom=ordinal(start.getDate());
+      return n===1 ? `Monthly on the ${dom}` : `Every ${n} months on the ${dom}`; }
+    case "year":  { const md=`${MONTHS_SHORT[start.getMonth()]} ${start.getDate()}`;
+      return n===1 ? `Yearly on ${md}` : `Every ${n} years on ${md}`; }
+  }
+  return "";
+}
+// approximate average occurrences per 30-day month, for the dashboard summary
+function ruleMonthlyAmount(rule){
+  const n = Math.max(1, rule.cadence.interval||1);
+  const per = { day:30/n, week:(365/7/12)/n, month:1/n, year:(1/12)/n }[rule.cadence.unit] || 0;
+  return rule.amount * per;
+}
+function activeRules(){ return store.state.recurring.filter(r=>r.active); }
+
 // project daily balances from anchor through endDate (inclusive of full range)
 function projectSeries(startDate, endDate){
   const today = todayISO();
   const daily = rollingDailyIncome(today);
+  const useRolling = store.state.settings.useRollingIncome!==false;
+  const hasRules = store.state.recurring.length>0;
   // anchor = latest bank on or before max(startDate, today's known) — we walk from anchor
   const anchor = latestBankEntry(today) || latestBankEntry(endDate);
   const series = [];
@@ -661,17 +861,19 @@ function projectSeries(startDate, endDate){
   let cur = walkStart;
   while(cur <= endDate){
     const r = store.state.records[cur];
+    const isPast = cur <= today;
+    // recurring rules only project forward; past days use real records, never synthetic entries
+    const rec = (!isPast && hasRules) ? recurringOnDate(cur) : {income:0,expense:0};
+    const dayExpense = (r?r.expense||0:0) + rec.expense;
     if(balance===null){
       balance = (r && r.bank!==null && r.bank!==undefined) ? r.bank : anchor.bank;
     } else {
-      const isPast = cur <= today;
-      const inc = isPast ? (r? (r.income||0):0) : daily;
-      const exp = r ? (r.expense||0) : 0;
-      balance = balance + inc - exp;
+      const inc = isPast ? (r? (r.income||0):0) : ((useRolling?daily:0) + rec.income);
+      balance = balance + inc - dayExpense;
       if(isPast && r && r.bank!==null && r.bank!==undefined) balance = r.bank; // honor real correction
     }
     if(cur >= startDate){
-      series.push({ date:cur, balance, projected: cur>today, expense:(r?r.expense||0:0), note:(r?r.note:"") });
+      series.push({ date:cur, balance, projected: cur>today, expense:dayExpense, note:(r?r.note:"") });
     }
     cur = addDays(cur,1);
   }
@@ -687,12 +889,25 @@ function forecastEndOfMonth(date){
 function upcomingExpenses(fromDate, days=90){
   const end = addDays(fromDate, days);
   const out=[];
+  // recorded one-off expenses
   for(const date of sortedDates()){
     if(date<=fromDate) continue;
     if(date>end) break;
     const r=store.state.records[date];
-    if(r.expense>0) out.push({date, amount:r.expense, note:r.note});
+    if(r.expense>0) out.push({date, amount:r.expense, note:r.note, recurring:false});
   }
+  // projected recurring expenses (not stored in records)
+  if(store.state.recurring.length){
+    let cur=addDays(fromDate,1);
+    while(cur<=end){
+      for(const it of recurringOnDate(cur).items){
+        if(it.type==="expense")
+          out.push({date:cur, amount:it.amount, note:it.rule.note||it.rule.category||"Recurring", recurring:true});
+      }
+      cur=addDays(cur,1);
+    }
+  }
+  out.sort((a,b)=> a.date<b.date?-1 : a.date>b.date?1 : 0);
   return out;
 }
 // income pace: actual income this month vs expected (daily avg * days elapsed)
@@ -1057,6 +1272,10 @@ function renderViz(container, animate){
   gWrap.appendChild(gc2);
   container.appendChild(gWrap);
 
+  // 2b. Recurring plan summary
+  container.appendChild(h("div",{class:"section-label"},"Recurring"));
+  container.appendChild(recurringSummaryCard());
+
   // 3. Upcoming expenses
   container.appendChild(h("div",{class:"section-label"},"What's coming"));
   const ups = upcomingExpenses(todayISO(), 90);
@@ -1071,7 +1290,7 @@ function renderViz(container, animate){
       const row=h("div",{class:"exp-item",onClick:()=>actions.selectDate(e.date)},[
         h("div",{class:"exp-when"},[ h("div",{class:"ew-d"},String(d.getDate())), h("div",{class:"ew-m"},MONTHS_SHORT[d.getMonth()]) ]),
         h("div",{class:"exp-mid"},[
-          h("div",{class:"exp-note"}, e.note||"Expense"),
+          h("div",{class:"exp-note"},[ e.note||"Expense", e.recurring? h("span",{class:"exp-tag"},"recurring"):null ]),
           h("div",{class:"exp-bar"},[ h("i",{"data-w":(e.amount/maxAmt*100).toFixed(0)}) ]),
           h("div",{class:"exp-eta"}, inDays===0?"today":inDays===1?"tomorrow":`in ${inDays} days`)
         ]),
@@ -1119,6 +1338,45 @@ function computeRunway(){
   const { series } = projectSeries(today, addDays(today,90));
   for(const p of series){ if(p.balance<0) return Math.max(0, daysBetween(today,p.date)); }
   return null;
+}
+
+// dashboard card summarising the recurring plan and its monthly net impact
+function recurringSummaryCard(){
+  const rules = activeRules();
+  const card = h("div",{class:"card"});
+  card.appendChild(h("div",{class:"card-head"},[
+    h("div",{class:"card-title"},"Recurring plan"),
+    h("div",{class:"card-hint"}, rules.length? `${rules.length} active`:"none yet")
+  ]));
+  if(!rules.length){
+    card.appendChild(h("div",{class:"empty-card"},[
+      h("div",{class:"ic"},"🔁"),
+      h("div",{class:"t"},"No recurring items"),
+      h("div",{class:"d"},"Add paychecks, rent, subscriptions and bills so CashCast projects them for you.")
+    ]));
+    card.appendChild(h("button",{class:"rsum-manage",style:"margin-top:12px",onClick:()=>openRecurring()},[
+      h("span",{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'}),"Set up recurring"
+    ]));
+    return card;
+  }
+  let inc=0, exp=0;
+  rules.forEach(r=>{ if(r.type==="income") inc+=ruleMonthlyAmount(r); else exp+=ruleMonthlyAmount(r); });
+  const net = inc-exp;
+  const body = h("div",{class:"rsum"},[
+    h("div",{class:"rsum-net"},[
+      h("span",{class:"v "+(net>=0?"pos":"neg")}, fmtSigned(net)),
+      h("span",{class:"u"},"net / month (approx)")
+    ]),
+    h("div",{class:"rsum-split"},[
+      h("div",{},[ h("div",{class:"k"},"In"), h("div",{class:"s pos"}, fmtMoney(inc,{cents:false})) ]),
+      h("div",{},[ h("div",{class:"k"},"Out"), h("div",{class:"s neg"}, fmtMoney(exp,{cents:false})) ])
+    ]),
+    h("button",{class:"rsum-manage",onClick:()=>openRecurring()},[
+      h("span",{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.7-3M21 3v6h-6M3 21v-6h6"/></svg>'}),"Manage recurring"
+    ])
+  ]);
+  card.appendChild(body);
+  return card;
 }
 
 function field(cls,label,value,sym,placeholder,dotColor,sel){
@@ -1357,9 +1615,159 @@ function renderCalendar(){
     const cls="cal-cell"+(ds===today?" today":"")+(ds===sel?" sel":"");
     const marks=h("div",{class:"marks"});
     if(r){ if(r.income>0) marks.appendChild(h("i",{style:"background:#3ddc97"})); if(r.expense>0) marks.appendChild(h("i",{style:"background:#ff7a72"})); if(r.bank!==null) marks.appendChild(h("i",{style:"background:#5b9dff"})); }
+    if(store.state.recurring.length){ const rec=recurringOnDate(ds); if(rec.items.length) marks.appendChild(h("i",{style:"background:#f5c451"})); }
     grid.appendChild(h("div",{class:cls,onClick:()=>{ actions.selectDate(ds); closeCalendar(); }},[ String(day), marks ]));
   }
   if(HAS_ANIME) anime({targets:grid.querySelectorAll(".cal-cell:not(.empty)"),scale:[.6,1],opacity:[0,1],delay:anime.stagger(8),duration:300,easing:"easeOutCubic"});
+}
+
+/* ============================================================
+   12b. RECURRING RULES SHEET
+   ============================================================ */
+function openRecurring(){
+  store.state.ui.recEdit = null;
+  closeSettings();
+  renderRecurring();
+  $("#recOverlay").classList.add("open");
+}
+function closeRecurring(){ $("#recOverlay").classList.remove("open"); store.state.ui.recEdit=null; }
+
+function renderRecurring(){
+  const body=$("#recBody"); if(!body) return;
+  const edit=store.state.ui.recEdit;
+  $("#recTitle").childNodes[0].nodeValue = edit ? (isStoredRule(edit.id)?"Edit rule ":"New rule ") : "Recurring ";
+  body.innerHTML="";
+  if(edit) body.appendChild(recForm(edit));
+  else body.appendChild(recListView());
+}
+function isStoredRule(id){ return store.state.recurring.some(r=>r.id===id); }
+
+function recListView(){
+  const wrap=h("div",{});
+  wrap.appendChild(h("button",{class:"rec-add",onClick:()=>{ store.state.ui.recEdit=blankRule(); renderRecurring(); }},[
+    h("span",{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'}),"Add recurring item"
+  ]));
+  wrap.appendChild(h("div",{class:"rec-intro"},"Paychecks, rent, subscriptions and bills are projected onto your forecast automatically — without touching your recorded history."));
+  const rules=store.state.recurring;
+  if(!rules.length){
+    wrap.appendChild(h("div",{class:"rec-empty"},[
+      h("div",{class:"ic"},"🔁"),
+      h("div",{class:"t"},"Nothing recurring yet"),
+      h("div",{class:"d"},"Add your first paycheck or bill to start projecting it forward.")
+    ]));
+    return wrap;
+  }
+  // income first, then expense; within each by amount desc
+  const ordered=[...rules].sort((a,b)=> (a.type===b.type ? b.amount-a.amount : (a.type==="income"?-1:1)));
+  const list=h("div",{class:"rec-list"});
+  ordered.forEach(r=>{
+    const next=nextOccurrence(r);
+    const sub=cadenceLabel(r)+(r.active?(next?" · next "+fmtDayLong(next):" · ended"):" · paused");
+    list.appendChild(h("button",{class:"rec-card"+(r.active?"":" off"),onClick:()=>{ store.state.ui.recEdit={...r,cadence:{...r.cadence}}; renderRecurring(); }},[
+      h("div",{class:"rec-ic "+r.type}, r.type==="income"?"↑":"↓"),
+      h("div",{class:"rec-info"},[
+        h("div",{class:"rec-name"}, r.note||r.category||(r.type==="income"?"Income":"Expense")),
+        h("div",{class:"rec-meta"}, sub)
+      ]),
+      h("div",{class:"rec-amt "+r.type},[ (r.type==="income"?"+":"−")+fmtMoney(r.amount,{cents:false}).replace("-",""),
+        r.category? h("small",{}, r.category):null ])
+    ]));
+  });
+  wrap.appendChild(list);
+  return wrap;
+}
+// first occurrence strictly on/after today within the horizon (null if none)
+function nextOccurrence(rule){
+  const today=todayISO();
+  let cur = rule.startDate>today ? rule.startDate : today;
+  const limit = addDays(today, RECUR_HORIZON);
+  while(cur<=limit){
+    if(ruleOccursOn(rule,cur)) return cur;
+    if(rule.endDate && cur>rule.endDate) return null;
+    cur=addDays(cur,1);
+  }
+  return null;
+}
+
+function recForm(d){
+  const form=h("div",{class:"rec-form"});
+  // type
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{},"Type"),
+    h("div",{class:"seg"},[
+      h("button",{class:"income"+(d.type==="income"?" on":""),onClick:()=>{ d.type="income"; renderRecurring(); }},"Income"),
+      h("button",{class:"expense"+(d.type==="expense"?" on":""),onClick:()=>{ d.type="expense"; renderRecurring(); }},"Expense")
+    ])
+  ]));
+  // amount
+  const sym=CURRENCIES[store.state.settings.currency]||"$";
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{}, "Amount ("+sym+")"),
+    h("input",{type:"text",inputmode:"decimal",value:d.amount||"",placeholder:"0.00",
+      onInput:e=>{ d.amount=num(e.target.value); }, onFocus:e=>e.target.select()})
+  ]));
+  // cadence: interval + unit
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{},"Repeats every"),
+    h("div",{class:"rf-two"},[
+      h("input",{type:"number",min:"1",step:"1",value:d.cadence.interval||1,
+        onInput:e=>{ const v=Math.round(num(e.target.value)); d.cadence.interval=v>=1?v:1; }}),
+      h("select",{onChange:e=>{ d.cadence.unit=e.target.value; renderRecurring(); }},
+        CADENCE_UNITS.map(u=>h("option",{value:u,selected:u===d.cadence.unit?"selected":null},
+          u.charAt(0).toUpperCase()+u.slice(1)+"(s)")))
+    ]),
+    h("div",{class:"rf-hint"}, cadenceLabel(d))
+  ]));
+  // start / end dates
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{},"Starts on"),
+    h("input",{type:"date",value:d.startDate||todayISO(),
+      onInput:e=>{ if(e.target.value) d.startDate=e.target.value; renderRecurring(); }})
+  ]));
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{},"Ends on (optional)"),
+    h("input",{type:"date",value:d.endDate||"",
+      onInput:e=>{ d.endDate=e.target.value||null; }})
+  ]));
+  // category + note
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{},"Category (optional)"),
+    h("input",{type:"text",value:d.category||"",placeholder:"e.g. Housing, Salary",maxlength:40,
+      onInput:e=>{ d.category=e.target.value; }})
+  ]));
+  form.appendChild(h("div",{class:"rf-row"},[
+    h("label",{},"Label / note"),
+    h("input",{type:"text",value:d.note||"",placeholder:"e.g. Rent, Paycheck, Netflix",maxlength:140,
+      onInput:e=>{ d.note=e.target.value; }})
+  ]));
+  // active toggle
+  form.appendChild(h("div",{class:"rf-active"},[
+    h("div",{},[ h("div",{class:"t"},"Active"), h("div",{class:"d"},"Include this item in the forecast") ]),
+    h("button",{class:"switch"+(d.active?" on":""),onClick:()=>{ d.active=!d.active; renderRecurring(); }},[ h("i") ])
+  ]));
+  // actions
+  form.appendChild(h("div",{class:"rf-actions"},[
+    h("button",{class:"rf-cancel",onClick:()=>{ store.state.ui.recEdit=null; renderRecurring(); }},"Cancel"),
+    h("button",{class:"rf-save",onClick:recSave},"Save")
+  ]));
+  if(isStoredRule(d.id))
+    form.appendChild(h("button",{class:"rf-del",onClick:()=>recDelete(d.id)},"Delete this rule"));
+  return form;
+}
+function recSave(){
+  const d=store.state.ui.recEdit; if(!d) return;
+  if(!(d.amount>0)){ toast("Enter an amount greater than 0", true); return; }
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d.startDate||"")){ toast("Pick a start date", true); return; }
+  if(d.endDate && d.endDate<d.startDate){ toast("End date is before the start date", true); return; }
+  store.state.ui.recEdit=null;
+  try{ actions.saveRule(d); toast("Recurring item saved"); }
+  catch(e){ store.state.ui.recEdit=d; toast("Could not save: "+e.message, true); renderRecurring(); }
+}
+function recDelete(id){
+  if(!confirm("Delete this recurring rule?")) return;
+  store.state.ui.recEdit=null;
+  actions.deleteRule(id);
+  toast("Rule deleted");
 }
 
 /* ============================================================
@@ -1380,6 +1788,16 @@ function renderSettings(){
   ]);
   body.appendChild(g1);
 
+  // planning group
+  const activeCount=activeRules().length;
+  const g0=h("div",{class:"set-group"},[
+    h("h4",{},"Planning"),
+    setBtn("🔁","#5b9dff","Recurring income & expenses",
+      activeCount? `${activeCount} active rule${activeCount===1?"":"s"} projected onto your forecast` : "Add paychecks, rent, subscriptions & bills",
+      openRecurring)
+  ]);
+  body.appendChild(g0);
+
   // view group
   const g2=h("div",{class:"set-group"},[ h("h4",{},"View") ]);
   const ssRow=h("div",{class:"set-row"},[
@@ -1394,6 +1812,18 @@ function renderSettings(){
   ]);
   g2.appendChild(curRow);
   body.appendChild(g2);
+
+  // forecast group
+  const rollOn = store.state.settings.useRollingIncome!==false;
+  const g4=h("div",{class:"set-group"},[
+    h("h4",{},"Forecast"),
+    h("div",{class:"set-row"},[
+      h("div",{class:"st"},[ h("div",{class:"t"},"Rolling income average"),
+        h("div",{class:"d"},"Project everyday income from your recent history. Turn off if your income is fully covered by recurring rules.") ]),
+      h("button",{class:"switch"+(rollOn?" on":""),onClick:()=>actions.setUseRollingIncome(!rollOn)},[ h("i") ])
+    ])
+  ]);
+  body.appendChild(g4);
 
   // danger
   const g3=h("div",{class:"set-group"},[
@@ -1412,7 +1842,7 @@ function setBtn(emoji,color,title,desc,onClick,danger){
 }
 function exportData(){
   const payload={ app:"CashCast", version:APP_VERSION, exportedAt:new Date().toISOString(),
-    settings:store.state.settings, records:store.state.records };
+    settings:store.state.settings, records:store.state.records, recurring:store.state.recurring };
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
@@ -1444,6 +1874,8 @@ function bindGlobal(){
   $("#settingsBtn").addEventListener("click", openSettings);
   $("#setClose").addEventListener("click", closeSettings);
   $("#setOverlay").addEventListener("click", e=>{ if(e.target.id==="setOverlay") closeSettings(); });
+  $("#recClose").addEventListener("click", closeRecurring);
+  $("#recOverlay").addEventListener("click", e=>{ if(e.target.id==="recOverlay") closeRecurring(); });
   $("#calOverlay").addEventListener("click", e=>{ if(e.target.id==="calOverlay") closeCalendar(); });
   $("#calPrev").addEventListener("click", ()=>{ store.state.ui.calMonth=addMonths(store.state.ui.calMonth,-1); renderCalendar(); });
   $("#calNext").addEventListener("click", ()=>{ store.state.ui.calMonth=addMonths(store.state.ui.calMonth,1); renderCalendar(); });
@@ -1461,6 +1893,7 @@ function init(){
     render();
     if($("#calOverlay").classList.contains("open")) renderCalendar();
     if($("#setOverlay").classList.contains("open")) renderSettings();
+    if($("#recOverlay").classList.contains("open")) renderRecurring();
   });
   render();
 }
